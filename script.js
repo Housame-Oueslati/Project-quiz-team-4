@@ -141,7 +141,7 @@ function endQuiz(timeOut = false) {
   resultContainer.classList.remove("hidden");
 
   console.log(countdownTime);
-  const timeUsed = `${Math.floor((600 - countdownTime) / 60)} min ${(600 - countdownTime) % 60} sek`; 
+  const timeUsed = `${Math.floor((TOTAL_TIME_SECONDS - countdownTime) / 60)} min ${(TOTAL_TIME_SECONDS - countdownTime) % 60} sek`; 
   const timeRemaining = `${Math.floor(countdownTime / 60)} min ${countdownTime % 60} sek`;
 
   document.getElementById("score").innerHTML = `
