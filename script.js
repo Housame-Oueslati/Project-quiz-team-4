@@ -9,7 +9,7 @@ let userAnswers = [];
 const countdownDisplay = document.getElementById("countdown-display");
 const startButton = document.getElementById("start-button");
 
-const TOTAL_TIME_SECONDS = 600; // totala tid
+const TOTAL_TIME_SECONDS = 1; // totala tid
 
 let countdownTime = TOTAL_TIME_SECONDS; //nuvarande tid
 let countdownInterval; //kontroll nyckel, stoppar timern och gör så att man kan börja om
@@ -136,6 +136,10 @@ function endQuiz(timeOut = false) {
   });
 
   const resultContainer = document.getElementById("result-container");
+  const questionContainer = document.getElementById("question-container");
+  questionContainer.classList.add("hidden");
+  console.log(questionContainer);
+
   resultContainer.classList.remove("hidden");
 
   console.log(countdownTime);
