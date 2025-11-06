@@ -4,9 +4,52 @@ let questions = [];
 let userAnswers = [];
 
 // statisk timer–variabel (för framtida användning)
-let timeLeft = 600; // 2 minuter t.ex.
+// let timeLeft = 600; // 2 minuter t.ex.
 
-const QUESTION_LIMIT = 20;
+const countdownDisplay = document.getElementById('countdown-display');
+const startButton = document.getElementById('start-button');
+
+const TOTAL_TIME_SECONDS = 600; // totala tid
+
+let countdownTime = TOTAL_TIME_SECONDS; //nuvarande tid
+let countdownInterval; //kontroll nyckel, stoppar timern och gör så att man kan börja om
+const QUESTION_LIMIT = 2;
+
+//Timer**
+function formatTime(totalSeconds) { //totalSeconds
+    const minutes = Math.floor(totalSeconds / 60); //visar minuter
+    const seconds = totalSeconds % 60; //visar återstende sekunder
+
+    const formattedMinutes = minutes.toString().padStart(2, '0'); //gör så att den alltid visar två siffror minuter, ex 9 min visar 09 på timern
+    const formattedSeconds = seconds.toString().padStart(2, '0'); //gör så att den alltid visar två siffror sekunder, ex 9 sek visar 09 på timern
+
+    return `${formattedMinutes}:${formattedSeconds}`;
+}
+
+function updateCountdown() {
+    countdownTime--; //Förkortning för variabel - 1, gör att sekundrarna räknas ner en sek i taget.
+
+    countdownDisplay.textContent = formatTime(countdownTime); //Kallar på formatTime funktionen och visar nedräkningen per sekund i div texten.
+    
+    if (countdownTime <= 0) {
+        clearInterval(countdownInterval); //Stoppar och rensar intervallet, tillåter att den kan börjar om igen.
+        countdownDisplay.textContent = "Tiden är ute! Vill du börja om?"; //Visar text stringen när timern tagit slut.
+        startButton.style.display = ''; //Återaktiverar knappen så att timern kan räkna ner igen.
+        startButton.textContent = 'Börja om';
+        countdownTime = TOTAL_TIME_SECONDS; //Återställer till 10 min.
+    }
+}
+
+function startCountdown() {
+    clearInterval(countdownInterval);
+    countdownTime = TOTAL_TIME_SECONDS; //Återställer timern.
+    startButton.style.display = 'none'; //Gömmer start knappen
+    countdownDisplay.textContent = formatTime(countdownTime); //Kallar på formatTime funktionen och visar nedräkningen per sekund i div texten.
+    countdownInterval = setInterval(updateCountdown, 1000); //1000 behövs för att det faktist ska gå en sekund mellan varje ändring.
+}
+
+startButton.addEventListener('click', startCountdown);
+
 
 async function getQuizQuestions() {
   try {
@@ -59,6 +102,7 @@ async function renderHTML(questionsData) {
     const userAnswer = await waitForAnswer([answerOne, answerTwo, answerThree, answerFour]);
     userAnswers.push(userAnswer);
 
+    // if-sats ska bort eftråt då den endast visar i konsolen om svaret var rätt eller fel.
     if (userAnswer === q.answers[q.correct]) {
       console.log("Korrekt!");
     } else {
@@ -86,7 +130,7 @@ function waitForAnswer(answerElements) {
 // ============================
 function endQuiz(timeOut = false) {
   // --- Timer bortkommenterad tills vidare ---
-  // clearInterval(timer);
+  clearInterval(countdownInterval);
 
   let correctCount = 0;
   questions.forEach((q, i) => {
@@ -96,8 +140,9 @@ function endQuiz(timeOut = false) {
   const resultContainer = document.getElementById("result-container");
   resultContainer.classList.remove("hidden");
 
-  const timeUsed = "N/A"; // statiskt tills vidare
-  const timeRemaining = `${Math.floor(timeLeft / 60)} min ${timeLeft % 60} sek`;
+  console.log(countdownTime);
+  const timeUsed = `${Math.floor((600 - countdownTime) / 60)} min ${(600 - countdownTime) % 60} sek`; 
+  const timeRemaining = `${Math.floor(countdownTime / 60)} min ${countdownTime % 60} sek`;
 
   document.getElementById("score").innerHTML = `
     <strong>Du fick ${correctCount} av ${questions.length} rätt!</strong><br>
