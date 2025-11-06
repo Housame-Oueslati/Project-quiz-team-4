@@ -138,8 +138,6 @@ function endQuiz(timeOut = false) {
   const resultContainer = document.getElementById("result-container");
   const questionContainer = document.getElementById("question-container");
   questionContainer.classList.add("hidden");
-  console.log(questionContainer);
-
   resultContainer.classList.remove("hidden");
 
   console.log(countdownTime);
