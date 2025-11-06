@@ -1,19 +1,73 @@
 
-console.log("Script loaded successfully.");
+const ul = document.getElementById("questions")
+let questions = null;
 
-@param {Array} arr
-@returns {Array}
+const QUESTION_LIMIT = 20;
+
+async function getQuizQuestions() {
+  try {
+    const response = await fetch("questions.json");
+
+    if(!response.ok) {
+      throw new Error(`HTTP error ! stats: ${response.status}`);
+    }
+    const data = await response.json();
+    const shuffledData = shuffle(data);
+    const limitedQuestions = shuffledData.slice(0, QUESTION_LIMIT);
+
+    return limitedQuestions;
+
+  } catch (error) {
+    console.error("Error", error);
+    return [];
+  }
+}
 
 function shuffle(arr) {
   let lastQuestion = arr.length -1;
   
-  while(lastIndex > 0) {
+  while(lastQuestion > 0) {
     const randQuestion = Math.floor(Math.random() * (lastQuestion +1));
     [arr[lastQuestion], arr[randQuestion]] = [arr[randQuestion], arr[lastQuestion]];
     lastQuestion -= 1;
   }
+
   return arr;
 }
+
+async function renderHTML(questions) {
+
+  console.log(questions);
+  
+  questions.forEach((question) => {
+    const li = document.createElement("li")
+    const questionHeading = document.createElement("h2");
+    const answerList = document.createElement("ul");
+
+    questionHeading.textContent = question.question;
+
+    question.answers.forEach((value) => {
+      console.log(value)
+      const answerItem = document.createElement("li");
+      answerItem.textContent = value;
+      answerList.appendChild(answerItem);
+    });
+
+    li.appendChild(questionHeading);
+    li.appendChild(answerList);
+    ul.appendChild(li);
+    
+  });
+}
+
+async function init() {
+  const questions = await getQuizQuestions(); // this sets questions
+  renderHTML(questions);
+}
+
+init();
+
+
 
 /*
  * Shuffles an array in place using the Fisher-Yates algorithm.
