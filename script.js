@@ -38,7 +38,7 @@ function updateCountdown() {
 
   if (countdownTime <= 0) {
     clearInterval(countdownInterval); //Stoppar och rensar intervallet, tillåter att den kan börjar om igen.
-    startButton.style.display = ""; //Återaktiverar knappen så att timern kan räkna ner igen.
+    startButton.style.display = "flex"; //Återaktiverar knappen så att timern kan räkna ner igen.
     startButton.textContent = "Börja om";
     countdownTime = TOTAL_TIME_SECONDS; //Återställer till 10 min.
     timeoutElement.style.display = "flex"; //Visar text stringen när timern tagit slut.
@@ -152,6 +152,8 @@ function endQuiz(timeOut = false) {
   const questionContainer = document.getElementById("question-container");
   questionContainer.classList.add("hidden");
   resultContainer.classList.remove("hidden");
+  startButton.style.display = "flex";
+  startButton.textContent = "Börja om";
 
   
 
