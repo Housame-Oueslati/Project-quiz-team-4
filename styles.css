@@ -281,3 +281,13 @@ body {
   transform: scale(1.1);
   color: var(--orange);
 }
+
+.correct{
+  background-color: green;
+  color: white;
+}
+
+.wrong{
+  background-color: red;
+  color: white;
+}

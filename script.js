@@ -132,14 +132,29 @@ async function renderHTML(questionsData) {
     answerFour.innerText = q.answers[3];
 
     const userAnswer = await waitForAnswer([answerOne, answerTwo, answerThree, answerFour]);
-    userAnswers.push(userAnswer);
+    userAnswers.push(userAnswer); // lagrar svar
+
 
     // if-sats ska bort eftråt då den endast visar i konsolen om svaret var rätt eller fel.
+
+    const chosenElement = [answerOne,answerTwo,answerThree,answerFour].find(a=>a.innerText === userAnswer)
+    const correctElement = [answerOne,answerTwo,answerThree,answerFour][q.correct];
+
     if (userAnswer === q.answers[q.correct]) {
+      chosenElement.classList.add("correct");
       console.log("Korrekt!");
     } else {
+      // tab ort hover 
+      chosenElement.classList.add("wrong");
+      correctElement.classList.add("correct");
       console.log("Fel!");
     }
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    chosenElement.classList.remove("correct","wrong");
+    correctElement.classList.remove("correct");
+    // lägg tbk hover
+
   }
 
   endQuiz(); // Kör när alla frågor är besvarade
