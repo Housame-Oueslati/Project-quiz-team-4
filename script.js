@@ -6,6 +6,14 @@ let questions = [];
 let userAnswers = [];
 let userName = "";
 
+function getUserName() {
+
+  const inputElement = document.getElementById('username');
+  userName = inputElement.value;
+  console.log('The user name is:', userName);
+}
+
+
 const showstart = document.getElementById("start-button");
 showstart.classList.add("show-start");
 
@@ -21,7 +29,7 @@ const TOTAL_TIME_SECONDS = 600; // totala tid
 
 let countdownTime = TOTAL_TIME_SECONDS; //nuvarande tid
 let countdownInterval; //kontroll nyckel, stoppar timern och gör så att man kan börja om
-const QUESTION_LIMIT = 2;
+const QUESTION_LIMIT = 10;
 
 //Timer**
 function formatTime(totalSeconds) {
@@ -64,6 +72,7 @@ function startCountdown() {
 function startshow() {
   const startshow = document.getElementById("question-container");
   startshow.classList.remove("hidden");
+  getUserName();
 
   // Göm leaderboard om den är synlig
   const leaderboard = document.getElementById("leaderboard-container");
