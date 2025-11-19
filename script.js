@@ -5,7 +5,7 @@ console.log("Script loaded successfully.");
 let questions = [];
 let userAnswers = [];
 let userName = "";
-
+let correctCount = 0;
 const showstart = document.getElementById("start-button");
 showstart.classList.add("show-start");
 
@@ -61,17 +61,7 @@ function startCountdown() {
   timeoutElement.style.display = "none"; //Tar bort text stringen när timern börjar om.
 }
 
-function startshow() {
-  const startshow = document.getElementById("question-container");
-  startshow.classList.remove("hidden");
 
-  // Göm leaderboard om den är synlig
-  const leaderboard = document.getElementById("leaderboard-container");
-  if (!leaderboard.classList.contains("hidden")) {
-    leaderboard.classList.add("hidden");
-  }
-  leaderboardButton.classList.add("hidden"); //Gömmer leaderboard knappen när quizet startas.
-}
 
 function resultatRestartGame() {
   const resultContainer = document.getElementById("result-container");
@@ -113,79 +103,88 @@ function shuffle(arr) {
   return arr;
 }
 
-async function renderHTML(questionsData) {
-  questions = questionsData;
-  userAnswers = [];
-
-  const question = document.getElementById("question");
-  const answerOne = document.getElementById("answer-one");
-  const answerTwo = document.getElementById("answer-two");
-  const answerThree = document.getElementById("answer-three");
-  const answerFour = document.getElementById("answer-four");
-
-  for (let i = 0; i < questions.length; i++) {
-    const q = questions[i];
-    question.innerText = q.question;
-    answerOne.innerText = q.answers[0];
-    answerTwo.innerText = q.answers[1];
-    answerThree.innerText = q.answers[2];
-    answerFour.innerText = q.answers[3];
-
-    const userAnswer = await waitForAnswer([answerOne, answerTwo, answerThree, answerFour]);
-    userAnswers.push(userAnswer); // lagrar svar
-
-    // if-sats ska bort eftråt då den endast visar i konsolen om svaret var rätt eller fel.
-
-    const chosenElement = [answerOne, answerTwo, answerThree, answerFour].find((a) => a.innerText === userAnswer);
-    const correctElement = [answerOne, answerTwo, answerThree, answerFour][q.correct];
-
-    if (userAnswer === q.answers[q.correct]) {
-      chosenElement.classList.remove("answers");
-      chosenElement.classList.add("correct");
-      console.log("Korrekt!");
-    } else {
-      // tab ort hover
-      chosenElement.classList.remove("answers");
-      correctElement.classList.remove("answers");
-      chosenElement.classList.add("wrong");
-      correctElement.classList.add("correct");
-      console.log("Fel!");
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    chosenElement.classList.remove("correct", "wrong");
-    correctElement.classList.remove("correct");
-    chosenElement.offsetWidth;
-    // lägg tbk hover
-    chosenElement.classList.add("answers");
-    correctElement.classList.add("answers");
-  }
-
-  endQuiz(); // Kör när alla frågor är besvarade
-}
-
+// Väntar på att användaren klickar ett svar → returnerar INDEX (0–3)
 function waitForAnswer(answerElements) {
   return new Promise((resolve) => {
-    answerElements.forEach((btn) => {
+    answerElements.forEach((btn, index) => {
       const handleClick = () => {
         answerElements.forEach((b) => b.removeEventListener("click", handleClick));
-        resolve(btn.innerText);
+        resolve(index); // returnera index istället för text
       };
       btn.addEventListener("click", handleClick);
     });
   });
 }
 
+// Renderar quizet och hanterar rätt/fel och lagrar resulat
+async function renderHTML() {
+  userAnswers = [];
+  console.log("Questions loaded:", questions);
+  const answerElements = [
+    document.getElementById("answer-one"),
+    document.getElementById("answer-two"),
+    document.getElementById("answer-three"),
+    document.getElementById("answer-four")
+  ];
+
+  const questionElement = document.getElementById("question");
+
+  for (const q of questions) {
+
+    // --- Visa frågan ---
+    questionElement.textContent = q.question;
+
+    q.answers.forEach((answer, i) => {
+      answerElements[i].textContent = answer;
+
+      // Lägg tillbaka hover-klassen
+      answerElements[i].classList.add("answers");
+    });
+
+    // --- Väntar på användaren ---
+    const chosenIndex = await waitForAnswer(answerElements);
+    userAnswers.push(chosenIndex);
+
+    // --- Hitta valda och rätt element ---
+    const chosenElement = answerElements[chosenIndex];
+    const correctIndex = q.correct;
+    const correctElement = answerElements[correctIndex];
+    console.log(`User chose index ${chosenIndex}, correct index is ${correctIndex}`);
+    // Ta bort hover från alla
+    answerElements.forEach(el => el.classList.remove("answers"));
+
+    // --- Visa feedback ---
+    if (chosenIndex === correctIndex) {
+      chosenElement.classList.add("correct");
+      correctCount++;
+    } else {
+      chosenElement.classList.add("wrong");
+      correctElement.classList.add("correct");
+    }
+
+    // --- Låt användaren se animationen ---
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // --- Ta bort klasser inför nästa fråga ---
+    chosenElement.classList.remove("correct", "wrong");
+    correctElement.classList.remove("correct");
+
+    // Force reflow = animationerna kan återstarta nästa fråga
+    void chosenElement.offsetWidth;
+    void correctElement.offsetWidth;
+  }
+  console.log("User answers:", userAnswers);
+  // När alla frågor är klara
+  endQuiz();
+}
+
+
+
 // Avsluta quiz och räkna resultat
 // ============================
 async function endQuiz(timeOut = false) {
   // --- Timer bortkommenterad tills vidare ---
   clearInterval(countdownInterval);
-
-  let correctCount = 0;
-  questions.forEach((q, i) => {
-    if (userAnswers[i] === q.answers[q.correct]) correctCount++;
-  });
 
   const resultContainer = document.getElementById("result-container");
   const questionContainer = document.getElementById("question-container");
@@ -210,10 +209,25 @@ async function endQuiz(timeOut = false) {
   await saveResultToLocal(correctCount, questions, timeUsed, timeRemaining, userName);
 }
 
+function startshow() {
+  const startshow = document.getElementById("question-container");
+  startshow.classList.remove("hidden");
+
+  // Göm leaderboard om den är synlig
+  const leaderboard = document.getElementById("leaderboard-container");
+  if (!leaderboard.classList.contains("hidden")) {
+    leaderboard.classList.add("hidden");
+  }
+  leaderboardButton.classList.add("hidden"); //Gömmer leaderboard knappen när quizet startas.
+  renderHTML();
+}
+
 async function init() {
+  correctCount = 0;
   const fetchedQuestions = await getQuizQuestions();
   if (fetchedQuestions.length > 0) {
-    renderHTML(fetchedQuestions);
+    questions = fetchedQuestions;
+    console.log("questions rendered");
   } else {
     console.error("Inga frågor kunde hämtas.");
   }
