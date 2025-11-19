@@ -27,12 +27,13 @@ h1 {
 }
 
 .user-name {
+  display: block;
   padding: 10px;
   margin-bottom: 32px;
   text-align: center;
   border-radius: 8px;
   border: none;
-
+  font-family: "Source Code Pro", monospace;
 }
 
 .submit-button {
@@ -183,6 +184,7 @@ h1 {
   cursor: pointer;
   transition: all 0.1s ease;
   font-weight: 700;
+  font-family: "Source Code Pro", monospace;
 }
 
 .show-start:hover,

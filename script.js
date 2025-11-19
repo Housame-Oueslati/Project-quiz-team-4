@@ -5,14 +5,13 @@ console.log("Script loaded successfully.");
 let questions = [];
 let userAnswers = [];
 let userName = "";
+let inputElement = document.querySelector('.user-name');
 
 function getUserName() {
 
-  const inputElement = document.getElementById('username');
   userName = inputElement.value;
   console.log('The user name is:', userName);
 }
-
 
 const showstart = document.getElementById("start-button");
 showstart.classList.add("show-start");
@@ -24,6 +23,7 @@ const countdownDisplay = document.getElementById("countdown-display");
 const startButton = document.getElementById("start-button");
 const leaderboardButton = document.getElementById("leaderboard-button");
 const timeoutElement = document.querySelector(".timeout");
+
 
 const TOTAL_TIME_SECONDS = 600; // totala tid
 
@@ -67,9 +67,23 @@ function startCountdown() {
   countdownDisplay.textContent = formatTime(countdownTime); //Kallar på formatTime funktionen och visar nedräkningen per sekund i div texten.
   countdownInterval = setInterval(updateCountdown, 1000); //1000 behövs för att det faktist ska gå en sekund mellan varje ändring.
   timeoutElement.style.display = "none"; //Tar bort text stringen när timern börjar om.
+  inputElement.style.display = "none";
 }
 
+inputElement.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        // Stop the Enter key from triggering any default browser action (like form submission)
+        event.preventDefault(); 
+        
+        // Bonus: Automatically trigger the start button's actions as well
+        // Since your start button already triggers startCountdown, startshow, and resultatRestartGame
+        // it's good practice to programmatically click it to maintain a single source of truth.
+        document.getElementById('start-button').click();
+    }
+});
+
 function startshow() {
+  
   const startshow = document.getElementById("question-container");
   startshow.classList.remove("hidden");
   getUserName();
