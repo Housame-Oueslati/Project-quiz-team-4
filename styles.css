@@ -22,6 +22,7 @@
   align-items: center;
   width: 100%;
   max-width: 800px;
+  max-height: 80%;
 }
 
 body {
@@ -135,6 +136,9 @@ h1 {
 }
 
 @media (max-width: 700px) {
+  h1 {
+    font-size: 45px;
+  }
   #question-container {
     display: flex;
     flex-direction: column;
@@ -284,7 +288,7 @@ h1 {
   align-items: center;
   padding: 12px 20px;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 200;
   color: var(--text-white);
 }
 
@@ -299,21 +303,26 @@ h1 {
 #leaderboard-list .rank {
   width: 50px;
   text-align: center;
-  font-weight: bold;
+  font-weight: 200;
 }
 
-#leaderboard-list .firstRanked {
+#leaderboard-list .firstRanked .rank{
   background: linear-gradient(90deg, gold, rgba(255, 215, 0, 0.1));
+  font-weight: 600;
 }
 
-#leaderboard-list .secondRanked {
+#leaderboard-list .secondRanked .rank{
   background: linear-gradient(90deg, silver, rgba(192, 192, 192, 0.1));
+  font-weight: 600;
 }
 
-#leaderboard-list .thirdRanked {
+#leaderboard-list .thirdRanked .rank{
   background: linear-gradient(90deg, #cd7f32, rgba(205, 127, 50, 0.1)); /* brons */
-  font-family: "Press Start 2P", system-ui;
-  font-size: 10px;
+  font-weight: 600;
+}
+
+#leaderboard-list .thirdRanked, #leaderboard-list .secondRanked, #leaderboard-list .firstRanked {
+  font-weight: 600;
 }
 
 #leaderboard-list .user {
@@ -324,7 +333,7 @@ h1 {
 
 #leaderboard-list .score {
   text-align: right;
-  font-weight: 600;
+  font-weight: 200;
 }
 
 /* Responsivitet */
