@@ -42,6 +42,16 @@
         <div id="score"></div>
       </div>
 
+      <button id="pauseBtn" class="pause-button hidden">⏸ Pausa</button>
+
+      <div id="pause-overlay" class="pause-overlay hidden">  
+        <div class="pause-popup"> 
+          <h2> ⏸ Pausad </h2>
+          <p> Spelet är pausad! Bajsa i fred</p>
+          <div id="resumeBtn">Forstätt</div>
+        </div>
+      </div>
+
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-S1YS6S9KN6"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
@@ -50,7 +60,6 @@
 
         gtag('config', 'G-S1YS6S9KN6');
       </script>
-      <button id="pauseBtn">Pause</button>
     </div>
   </body>
 </html>

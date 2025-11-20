@@ -22,6 +22,9 @@ showstart.classList.add("show-start");
 const countdownDisplay = document.getElementById("countdown-display");
 const startButton = document.getElementById("start-button");
 const leaderboardButton = document.getElementById("leaderboard-button");
+const pauseBtn = document.getElementById("pauseBtn");
+const resumeBtn = document.getElementById("resumeBtn");
+const overlay = document.getElementById("pause-overlay");
 const timeoutElement = document.querySelector(".timeout");
 
 const TOTAL_TIME_SECONDS = 600; // totala tid
@@ -29,6 +32,8 @@ const TOTAL_TIME_SECONDS = 600; // totala tid
 let countdownTime = TOTAL_TIME_SECONDS; //nuvarande tid
 let countdownInterval; //kontroll nyckel, stoppar timern och gör så att man kan börja om
 const QUESTION_LIMIT = 10;
+let isPaused = false;
+let resumeResolve;
 
 //Timer**
 function formatTime(totalSeconds) {
@@ -134,8 +139,60 @@ function waitForAnswer(answerElements) {
   });
 }
 
+pauseBtn.addEventListener("click", () => {
+  isPaused = !isPaused;
+
+  if (isPaused) {
+    showPausePopup();  
+  } else {
+    hidePausePopup();
+    resume();          
+  }
+});
+
+
+resumeBtn.addEventListener("click", () => {
+  isPaused = false; 
+  hidePausePopup(); 
+  resume();         
+});
+
+function waitForUnpause(){
+  if(!isPaused) return Promise.resolve();
+
+  return new Promise(r => {
+    resumeResolve = r;
+  })
+}
+
+function resume(){
+  if (resumeResolve){
+    resumeResolve();
+    resumeResolve = null;
+  }
+}
+
+function showPausePopup() {
+  overlay.classList.remove("hidden");
+
+  requestAnimationFrame(() => {
+    overlay.classList.add("show");   // starta fade-in
+  });
+}
+
+function hidePausePopup() {
+  overlay.classList.remove("show"); 
+
+  setTimeout(() => {
+    overlay.classList.add("hidden");
+  }, 350); 
+}
+
+
+
 // Renderar quizet och hanterar rätt/fel och lagrar resulat
 async function renderHTML() {
+  pauseBtn.classList.remove("hidden");
   userAnswers = [];
   console.log("Questions loaded:", questions);
   const answerElements = [
@@ -182,6 +239,8 @@ async function renderHTML() {
 
     // --- Låt användaren se animationen ---
     await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    await waitForUnpause();
 
     // --- Ta bort klasser inför nästa fråga ---
     chosenElement.classList.remove("correct", "wrong");
