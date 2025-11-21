@@ -28,7 +28,7 @@ const timeoutElement = document.querySelector(".timeout");
 const TOTAL_TIME_SECONDS = 600;
 let countdownTime = TOTAL_TIME_SECONDS;
 let countdownInterval;
-const QUESTION_LIMIT = 1;
+const QUESTION_LIMIT = 3;
 let isPaused = false; // FIX: detta styr nu också canvas-regnet
 let rigthToPause = false;
 let pendingPause = false;
@@ -56,7 +56,8 @@ function formatTime(totalSeconds) {
 
 
 function updateCountdown() {
-  // canvas-regnet ska inte pausas längre // FIX: stoppar timer vid paus
+  // Stoppa nedräkningen när spelet är pausat
+  if (isPaused) return;
 
   countdownTime--;
   countdownDisplay.textContent = formatTime(countdownTime);
@@ -70,6 +71,7 @@ function updateCountdown() {
     document.getElementById("question-container").classList.add("hidden");
   }
 }
+
 
 function startCountdown() {
   clearInterval(countdownInterval);
