@@ -2,6 +2,8 @@ import { saveResultToLocal, loadResults } from "./quizStorage.js";
 import { playSound, spawnFX } from "./scripts/effects.js";
 import { showstart, countdownDisplay, startButton, leaderboardButton, pauseBtn, resumeBtn, overlay, pauseWarning, timeoutElement, inputElement } from "./scripts/dom.js";
 import { startCountdown, updateCountdown, TOTAL_TIME_SECONDS, countdownTime, state, togglePause, countdownInterval } from "./scripts/timer.js";
+import { draw } from "./scripts/matrix.js";
+import { getQuizQuestions } from "./scripts/questions.js";
 
 console.log("Script loaded successfully.");
 
@@ -10,15 +12,10 @@ let userAnswers = [];
 let userName = "";
 let correctCount = 0;
 
-// const TOTAL_TIME_SECONDS = 600;
-// let countdownTime = TOTAL_TIME_SECONDS;
-// let countdownInterval;
-// let isPaused = false; // FIX: detta styr nu också canvas-regnet
-
 let rigthToPause = false;
 let pendingPause = false;
 let resumeResolve;
-const QUESTION_LIMIT = 3;
+
 
 showstart.classList.add("show-start");
 
@@ -46,93 +43,6 @@ document.getElementById("close-leaderboard").addEventListener("click", () => {
   document.getElementById("leaderboard-container").classList.add("hidden");
 });
 
-
-// function formatTime(totalSeconds) {
-//   const minutes = Math.floor(totalSeconds / 60);
-//   const seconds = totalSeconds % 60;
-//   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-// }
-
-
-// function updateCountdown() {
-//   // Stoppa nedräkningen när spelet är pausat
-//   if (isPaused) return;
-
-//   countdownTime--;
-//   countdownDisplay.textContent = formatTime(countdownTime);
-
-//   if (countdownTime <= 0) {
-//     clearInterval(countdownInterval);
-//     startButton.style.display = "flex";
-//     startButton.textContent = "Börja om";
-//     countdownTime = TOTAL_TIME_SECONDS;
-//     timeoutElement.style.display = "flex";
-//     document.getElementById("question-container").classList.add("hidden");
-//   }
-// }
-
-
-// function startCountdown() {
-//   clearInterval(countdownInterval);
-//   countdownTime = TOTAL_TIME_SECONDS;
-//   startButton.style.display = "none";
-//   countdownDisplay.textContent = formatTime(countdownTime);
-//   countdownInterval = setInterval(updateCountdown, 1000);
-//   timeoutElement.style.display = "none";
-//   inputElement.style.display = "none";
-//   const h1div = document.getElementById("h1"); // hide tittle
-//   h1div.style.display = "none"; // hide tittle
-// }
-
-
-
-function resultatRestartGame() {
-  document.getElementById("result-container").classList.add("hidden");
-  startCountdown();
-  init();
-}
-
-
-
-async function getQuizQuestions() {
-  try {
-    const response = await fetch("questions.json");
-
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-    const data = await response.json();
-    const shuffledData = shuffle(data);
-    return shuffledData.slice(0, QUESTION_LIMIT);
-  } catch (error) {
-    console.error("Error:", error);
-    return [];
-  }
-}
-
-function shuffle(arr) {
-  let lastQuestion = arr.length - 1;
-  while (lastQuestion > 0) {
-    const randQuestion = Math.floor(Math.random() * (lastQuestion + 1));
-    [arr[lastQuestion], arr[randQuestion]] = [arr[randQuestion], arr[lastQuestion]];
-    lastQuestion -= 1;
-  }
-  return arr;
-}
-
-function waitForAnswer(answerElements) {
-  return new Promise((resolve) => {
-    answerElements.forEach((btn, index) => {
-      const handleClick = () => {
-        rigthToPause = true;
-        pauseWarning.classList.add("hidden");
-        answerElements.forEach((b) => b.removeEventListener("click", handleClick));
-        resolve(index);
-      };
-      btn.addEventListener("click", handleClick);
-    });
-  });
-}
-
 pauseBtn.addEventListener("click", () => {
   if (!rigthToPause) {
     pauseWarning.classList.remove("hidden");
@@ -149,11 +59,40 @@ pauseBtn.addEventListener("click", () => {
   }
 });
 
+
 resumeBtn.addEventListener("click", () => {
   state.isPaused = false;
   hidePausePopup();
   resume();
 });
+
+
+function resultatRestartGame() {
+  document.getElementById("result-container").classList.add("hidden");
+  startCountdown();
+  init();
+}
+
+
+
+
+
+function waitForAnswer(answerElements) {
+  return new Promise((resolve) => {
+    answerElements.forEach((btn, index) => {
+      const handleClick = () => {
+        rigthToPause = true;
+        pauseWarning.classList.add("hidden");
+        answerElements.forEach((b) => b.removeEventListener("click", handleClick));
+        resolve(index);
+      };
+      btn.addEventListener("click", handleClick);
+    });
+  });
+}
+
+
+
 
 function waitForUnpause() {
   if (!state.isPaused) return Promise.resolve();
@@ -369,49 +308,10 @@ async function showLeaderboard() {
 
 init();
 
-//MATRIX RAIN
-let rainPaused = false;
-var c = document.getElementById("c");
-var ctx = c.getContext("2d");
 
-c.height = window.innerHeight;
-c.width = window.innerWidth;
-
-var matrix = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}`";
-matrix = matrix.split("");
-
-var font_size = 10;
-var columns = c.width / font_size;
-var drops = [];
-
-for (var x = 0; x < columns; x++) drops[x] = 1;
-
-function draw() {
- if (state.isPaused || rainPaused) return; // ← istället för paused
-
-  ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
-  ctx.fillRect(0, 0, c.width, c.height);
-
-  ctx.fillStyle = "#cd7f32";
-  ctx.font = font_size + "px arial";
-
-  for (var i = 0; i < drops.length; i++) {
-    var text = matrix[Math.floor(Math.random() * matrix.length)];
-    ctx.fillText(text, i * font_size, drops[i] * font_size);
-
-    if (drops[i] * font_size > c.height && Math.random() > 0.975)
-      drops[i] = 0;
-
-    drops[i]++;
-  }
-}
 
 setInterval(draw, 35);
 
 
-// styr endast matrix-regnet
-document.querySelector(".theme-btn").addEventListener("click", function () {
-    rainPaused = !rainPaused;
-    this.textContent = rainPaused ? "<theme>" : "<no-theme>";
-});
+
 
