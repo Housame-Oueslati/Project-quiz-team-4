@@ -5,6 +5,8 @@ The project uses **JSON** for quiz questions, **LocalStorage** for local persist
 
 ---
 
+**🌐 Live Demo:** [Try it here](https://fullstack-javascript-quiz.netlify.app/)
+
 ## 🚀 Features
 
 - **Dynamic Questions**: Loaded from `questions.json` and shuffled.  
@@ -26,7 +28,7 @@ The project uses **JSON** for quiz questions, **LocalStorage** for local persist
 ---
 
 ## 🗂️ Project Structure
-
+```
 Project-quiz-team-4/
 ├─ index.html             # Main page
 ├─ style.css              # Basic styling
@@ -41,7 +43,7 @@ Project-quiz-team-4/
 │   ├─ effects.js         # Sound & visual effects
 │   └─ quizStorage.js     # LocalStorage & Firebase integration
 └─ README.md
-
+```
 ---
 
 ## 🧩 Flow / Logic
@@ -72,7 +74,7 @@ Project-quiz-team-4/
 ---
 
 ## 🖼️ Visual Overview
-
+```
 [ questions.json ]
        ↓
 [ Init / Start ] → Reset state & score
@@ -86,7 +88,7 @@ Project-quiz-team-4/
 [ Next Question / End ] → Save to LocalStorage + Firebase
        ↓
 [ Leaderboard ] → Display top scores
-
+```
 ---
 
 ## ⚡ Technical Overview
@@ -104,7 +106,7 @@ Project-quiz-team-4/
 ## 🛠️ Installation
 
 1. Clone the repository:  
-   git clone https://github.com/Housame-Oueslati/Project-quiz-team-4.git  
+   git clone https://github.com/sheymaisse-chas/Project-quiz-team-4.git 
 
 2. Open `index.html` in a web browser  
 
@@ -117,6 +119,7 @@ Project-quiz-team-4/
 - Pause anytime with the **Pause** button  
 - View your score at the end and see your position in the **Leaderboard**  
 
+**🌐 Live Demo:** [Try it here](https://fullstack-javascript-quiz.netlify.app/)
 ---
 
 ## 📌 Notes
@@ -130,3 +133,6 @@ Project-quiz-team-4/
 ## 🏆 License
 
 MIT License
+
+
+
