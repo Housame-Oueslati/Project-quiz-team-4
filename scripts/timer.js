@@ -1,6 +1,6 @@
 import { countdownDisplay, startButton, timeoutElement, inputElement } from "./dom.js";
 
-export const TOTAL_TIME_SECONDS = 600;
+export const TOTAL_TIME_SECONDS = 180;
 export let countdownTime = TOTAL_TIME_SECONDS;
 export let countdownInterval;
 // export let isPaused = false; // FIX: detta styr nu också canvas-regnet
